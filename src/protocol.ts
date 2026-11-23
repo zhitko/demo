@@ -14,7 +14,7 @@ export function normalizeTranscript(text: string): string {
 export function stubProtocol(transcript: string): Protocol {
   if (normalizeTranscript(transcript) === normalizeTranscript(TRAINING_TRANSCRIPT)) {
     return {
-      decisions: [...REFERENCE_PROTOCOL.decisions],
+      decisions: REFERENCE_PROTOCOL.decisions.map((decision) => ({ ...decision })),
       tasks: REFERENCE_PROTOCOL.tasks.map((task) => ({ ...task })),
       questions: [...REFERENCE_PROTOCOL.questions],
     }
@@ -23,8 +23,13 @@ export function stubProtocol(transcript: string): Protocol {
 }
 
 function extractProtocol(transcript: string): Protocol {
-  const decisions = [...transcript.matchAll(/Принимаем решение:\s*([^\n]+)/gi)].map(
-    (match) => finishSentence(match[1] ?? ''),
+  const decisions = [...transcript.matchAll(/^.*Принимаем решение:\s*([^\n]+).*$/gim)].flatMap(
+    (match) => {
+      const text = finishSentence(match[1] ?? '')
+      const source = (match[0] ?? '').trim()
+      if (!text || !source) return []
+      return [{ text, source }]
+    },
   )
   const questions = [...transcript.matchAll(/Открытый вопрос:\s*([^\n]+)/gi)].map(
     (match) => asQuestion(match[1] ?? ''),

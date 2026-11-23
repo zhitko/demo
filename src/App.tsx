@@ -11,7 +11,7 @@ type SelectedFile = {
 }
 
 type ShownProtocol = {
-  /** Текст, по которому построен текущий протокол. На экране базового прототипа не показывается. */
+  /** Текст, по которому построен текущий протокол. Его же показываем рядом с блоками. */
   sourceText: string
   protocol: Protocol
   elapsedMs: number
@@ -91,32 +91,43 @@ export default function App() {
               Скачать протокол
             </button>
           </div>
-          <div className="blocks">
-            <article className="block">
-              <h2>Решения</h2>
-              <ol>
-                {shown.protocol.decisions.map((decision, index) => (
-                  <li key={`${index}:${decision}`}>{decision}</li>
-                ))}
-              </ol>
-            </article>
-            <article className="block">
-              <h2>Задачи</h2>
-              <p className="block-note">с ответственными</p>
-              <ol>
-                {shown.protocol.tasks.map((task, index) => (
-                  <li key={`${index}:${task.owner}:${task.text}`}>{formatTask(task)}</li>
-                ))}
-              </ol>
-            </article>
-            <article className="block">
-              <h2>Открытые вопросы</h2>
-              <ol>
-                {shown.protocol.questions.map((question, index) => (
-                  <li key={`${index}:${question}`}>{question}</li>
-                ))}
-              </ol>
-            </article>
+          <div className="result-layout">
+            <div className="protocol-column">
+              <article className="block">
+                <h2>Решения</h2>
+                <ol>
+                  {shown.protocol.decisions.map((decision, index) => (
+                    <li key={`${index}:${decision.text}`}>
+                      {decision.text}
+                      {decision.source ? <blockquote className="quote">{decision.source}</blockquote> : null}
+                    </li>
+                  ))}
+                </ol>
+              </article>
+              <div className="pair">
+                <article className="block">
+                  <h2>Задачи</h2>
+                  <p className="block-note">с ответственными</p>
+                  <ol>
+                    {shown.protocol.tasks.map((task, index) => (
+                      <li key={`${index}:${task.owner}:${task.text}`}>{formatTask(task)}</li>
+                    ))}
+                  </ol>
+                </article>
+                <article className="block">
+                  <h2>Открытые вопросы</h2>
+                  <ol>
+                    {shown.protocol.questions.map((question, index) => (
+                      <li key={`${index}:${question}`}>{question}</li>
+                    ))}
+                  </ol>
+                </article>
+              </div>
+            </div>
+            <aside className="source">
+              <h2>Расшифровка</h2>
+              <pre>{shown.sourceText}</pre>
+            </aside>
           </div>
         </section>
       ) : null}
