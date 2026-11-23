@@ -1,10 +1,16 @@
+export type Decision = {
+  text: string
+  /** Строка расшифровки, из которой взято решение. */
+  source: string
+}
+
 export type TaskItem = {
   text: string
   owner: string
 }
 
 export type Protocol = {
-  decisions: string[]
+  decisions: Decision[]
   tasks: TaskItem[]
   questions: string[]
 }
